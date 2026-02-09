@@ -1,57 +1,67 @@
 import tkinter as tk
-from tkinter import ttk, messagebox, simpledialog, scrolledtext
+from tkinter import ttk, messagebox, simpledialog, scrolledtext, filedialog
 import tkinter.font
 import os
 
 root = tk.Tk()
 
-# Set global font
-text_font = tkinter.font.Font(family="Arial", size=12, weight="bold")
+
+text_font = tkinter.font.Font(family="Arial", size=10, weight="normal")
 root.option_add("*Font", text_font)
 
-root.title("Notepad V0.1")
-root.geometry("300x200")
+root.title("Notepad V0.2")
+root.geometry("350x50")
 root.configure(bg="darkgrey")
 
-# Use iconbitmap for .ico files
+
 try:
-    root.iconbitmap("icon.ico")
+    icon_path = os.path.join(os.path.dirname(__file__), "icon.ico")
+    root.iconbitmap(icon_path)
 except Exception as e:
     print(f"Icon load failed: {e}")
 
 frm = ttk.Frame(root, padding=10)
 frm.grid()
 
-current_filename = None  # Global file name
+current_filename = None  
 
 def close_app():
-    if messagebox.askokcancel("Quit", "Do you want to quit?"):
+    if messagebox.askokcancel("Notepad V0.2: Quit", "Do you want to quit?"):
         root.destroy()
 
 def save_file(text_widget):
     global current_filename
     content = text_widget.get("1.0", tk.END).strip()
     if not content:
-        messagebox.showwarning("Save File", "No content to save!")
+        messagebox.showwarning("Save File: Warning", "No content to save!")
         return
     
     if not current_filename:
-        messagebox.showerror("Error", "Filename not set.")
+        messagebox.showerror("Save File: error", "Filename not set.")
         return
 
+    
     desktop_path = os.path.join(os.path.expanduser("~"), "Desktop")
-    file_path = os.path.join(desktop_path, f"{current_filename}.txt")
+    file_path = filedialog.asksaveasfilename(
+        initialdir=desktop_path,
+        initialfile=f"{current_filename}.txt",
+        defaultextension=".txt",
+        filetypes=[("Text Files", "*.txt"), ("All Files", "*.*")]
+    )
+    
+    if not file_path:  
+        return
 
     try:
         with open(file_path, "w", encoding="utf-8") as file:
             file.write(content)
-        messagebox.showinfo("Save File", f"File saved successfully to:\n{file_path}")
+        messagebox.showinfo("Save File: Output", f"File saved successfully to:\n{file_path}")
     except Exception as e:
-        messagebox.showerror("Error", f"Failed to save file:\n{e}")
+        messagebox.showerror("Save File: Error", f"Failed to save file:\n{e}")
 
 def open_notepad():
-    root.geometry("800x1000")
-    root.title(f"Notepad V0.1 - {current_filename}.txt")
+    root.geometry("740x600")
+    root.title(f"Notepad V0.2 - {current_filename}.txt*")
     
     notepad_frame = ttk.Frame(root, padding=10)
     notepad_frame.grid()
@@ -59,13 +69,13 @@ def open_notepad():
     text_widget = scrolledtext.ScrolledText(notepad_frame, wrap=tk.WORD, width=100, height=30)
     text_widget.grid(column=0, row=0, columnspan=2)
 
-    # Create new button instances instead of reusing SpecButton
+     
     save_btn = tk.Button(
         notepad_frame,
-        text="Save",
-        font=("Helvetica", 9, "bold"),
+        text="Save File",
+        font=("Helvetica", 10, "italic"),
         bg="white",
-        fg="darkgrey",
+        fg="black",
         activebackground="darkgrey",
         activeforeground="black",
         bd=3,
@@ -79,9 +89,9 @@ def open_notepad():
     close_btn = tk.Button(
         notepad_frame,
         text="Close",
-        font=("Helvetica", 9, "bold"),
+        font=("Helvetica", 10, "italic"),
         bg="white",
-        fg="darkgrey",
+        fg="black",
         activebackground="darkgrey",
         activeforeground="black",
         bd=3,
@@ -94,26 +104,26 @@ def open_notepad():
 
 def start():
     global current_filename
-    if messagebox.askyesno("Notepad V0.1 -- Confirmation", "Do you want to proceed?"):
-        filename = simpledialog.askstring("File Name", "Enter the file name (without extension):")
+    if messagebox.askyesno("Notepad V0.2: Confirmation", "Do you want to proceed?"):
+        filename = simpledialog.askstring("Notepad V0.2: File Name", "Enter the file name (without extension):")
         if filename:
             current_filename = filename.strip()
             open_notepad()
         else:
-            messagebox.showwarning("File Name", "No file name provided!")
+            messagebox.showwarning("Notepad V0.2: File Name", "No file name provided!")
     else:
-        messagebox.showinfo("Info", "Returning to the main menu.")
+        messagebox.showinfo("Notepad V0.2: Output", "Returning to the main menu.")
 
 # GUI setup
-ttk.Label(frm, text="Notepad V0.1").grid(column=0, row=0)
+ttk.Label(frm, text="Notepad V0.2").grid(column=0, row=0)
 
 # Start button
 start_btn = tk.Button(
     frm,
-    text="Start",
-    font=("Helvetica", 9, "bold"),
+    text="New Text File",
+    font=("Helvetica", 10, "italic"),
     bg="white",
-    fg="darkgrey",
+    fg="black",
     activebackground="darkgrey",
     activeforeground="black",
     bd=3,
@@ -127,10 +137,10 @@ start_btn.grid(column=1, row=0, padx=5)
 # Stop button
 stop_btn = tk.Button(
     frm,
-    text="Stop",
-    font=("Helvetica", 9, "bold"),
+    text="Exit Notepad",
+    font=("Helvetica", 10, "italic"),
     bg="white",
-    fg="darkgrey",
+    fg="black",
     activebackground="darkgrey",
     activeforeground="black",
     bd=3,
